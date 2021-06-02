@@ -1,0 +1,22 @@
+PODS:
+  - camera_roll_uploader (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - camera_roll_uploader (from `.symlinks/plugins/camera_roll_uploader/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  camera_roll_uploader:
+    :path: ".symlinks/plugins/camera_roll_uploader/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  camera_roll_uploader: 1633c494f9ac36d7a338f2aec0f877ca5ad3c143
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.10.1
