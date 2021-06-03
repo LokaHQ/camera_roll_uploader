@@ -13,12 +13,17 @@ class CameraRollViewController: UIViewController, UICollectionViewDelegate, UICo
     
     @IBOutlet weak var cameraRollCollectionView: UICollectionView!
     @IBOutlet weak var selectedImageView: UIImageView!
+    @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var screenTitle: UILabel!
     
     // MARK: Properties
     fileprivate var allPhotos: PHFetchResult<PHAsset>!
     fileprivate let imageManager = PHCachingImageManager()
     fileprivate var thumbnailSize: CGSize!
     fileprivate var previousPreheatRect = CGRect.zero
+    
+    var itemsPerRow: Int = 3
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +46,9 @@ class CameraRollViewController: UIViewController, UICollectionViewDelegate, UICo
         if allPhotos.count > 0 {
             setSelectedImage(index: 0)
         }
+        
+        backButton.addTarget(self, action: #selector(backButtonClicked), for: .touchUpInside)
+        nextButton.addTarget(self, action: #selector(nextButtonClicked), for: .touchUpInside)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,19 +66,33 @@ class CameraRollViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     func setSelectedImage(index: Int) {
-        selectedImageView.image = nil
-        let asset = allPhotos.object(at: index)
-        let options = PHImageRequestOptions()
-        options.deliveryMode = .opportunistic
-        options.isNetworkAccessAllowed = true
-        options.resizeMode = .fast
-        imageManager.requestImage(for: asset,
-                                  targetSize: CGSize(width: selectedImageView.frame.size.width, height: selectedImageView.frame.size.height),
-                                  contentMode: .aspectFill,
-                                  options: options,
-                                  resultHandler: { image, _ in
-                                    self.selectedImageView.image = image
-                                  })
+        DispatchQueue.main.async {
+            self.selectedImageView.image = nil
+            let asset = self.allPhotos.object(at: index)
+            let options = PHImageRequestOptions()
+            options.deliveryMode = .opportunistic
+            options.isNetworkAccessAllowed = true
+            options.resizeMode = .fast
+            self.imageManager.requestImage(for: asset,
+                                           targetSize: CGSize(width: self.selectedImageView.frame.size.width, height: self.selectedImageView.frame.size.height),
+                                           contentMode: .aspectFill,
+                                           options: options,
+                                           resultHandler: { image, _ in
+                                            self.selectedImageView.image = image
+                                           })
+        }
+    }
+    
+    @objc func backButtonClicked() {
+        self.dismiss(animated: true) {
+            print("dismissed")
+        }
+    }
+    
+    @objc func nextButtonClicked() {
+        self.dismiss(animated: true) {
+            print("dismissed")
+        }
     }
     
     deinit {
@@ -80,7 +102,8 @@ class CameraRollViewController: UIViewController, UICollectionViewDelegate, UICo
     func setCollectionViewLayout() -> UICollectionViewFlowLayout {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 5, bottom: 5, right: 5)
-        let itemSize = (view.frame.size.width / 3) - 5
+        print(itemsPerRow)
+        let itemSize = (Int(view.frame.size.width) / itemsPerRow) - 5
         layout.itemSize = CGSize(width: itemSize, height: itemSize)
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 2.5

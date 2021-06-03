@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:camera_roll_uploader/camera_roll_uploader.dart';
 
 void main() {
@@ -14,9 +11,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  CameraRollViewOptions viewOptions;
+
   @override
   void initState() {
     super.initState();
+
+    viewOptions = CameraRollViewOptions();
+    viewOptions.bgColor = '000000';
+    viewOptions.backButtonColor = 'FFFFFF';
+    viewOptions.nextButtonColor = '007AFF';
+    viewOptions.iosBackButtonImage = 'xmark';
+    viewOptions.title = 'Select Picture';
+    viewOptions.titleColor = 'FFFFFF';
+    viewOptions.itemsPerRow = 4;
   }
 
   @override
