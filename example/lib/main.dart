@@ -21,6 +21,9 @@ class _MyAppState extends State<MyApp> {
           ),
           body: CameraRollUploader(
             limit: 15,
+            selectedImageCallback: (imagePath) {
+              print(imagePath);
+            },
           ),
           floatingActionButton: Column(
             mainAxisSize: MainAxisSize.min,

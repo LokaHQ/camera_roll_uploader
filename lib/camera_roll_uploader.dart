@@ -15,13 +15,13 @@ class ByteArrayJsonConverter
       Uint8List.fromList(json.cast<int>());
 
   @override
-  List<dynamic> toJson(Uint8List list) =>
-      list == null ? [] : List<dynamic>.from(list);
+  List<dynamic> toJson(Uint8List list) => List<dynamic>.from(list);
 }
 
 class CameraRollUploader extends StatefulWidget {
-  CameraRollUploader({this.limit = 21});
+  CameraRollUploader({this.limit = 21, this.selectedImageCallback});
   final int limit;
+  final Function(String)? selectedImageCallback;
 
   @override
   _CameraRollUploaderState createState() => _CameraRollUploaderState();
@@ -34,8 +34,8 @@ class _CameraRollUploaderState extends State<CameraRollUploader> {
   List<Uint8List> _bytesImages = [];
   var _scrollController = ScrollController();
   var _currentCursor = 0;
-  String _selectedImagePath;
-  Uint8List _selectedBytes;
+  String? _selectedImagePath;
+  Uint8List? _selectedBytes;
   var _isLoading = false;
 
   @override
@@ -86,6 +86,12 @@ class _CameraRollUploaderState extends State<CameraRollUploader> {
     setState(() {
       _isLoading = false;
     });
+    try {
+      this.widget.selectedImageCallback!(_selectedImagePath!);
+    } catch (e) {
+      print(
+          "there's no image path because selectedImageCallback(String imagePath) is null");
+    }
   }
 
   @override
@@ -107,13 +113,13 @@ class _CameraRollUploaderState extends State<CameraRollUploader> {
                     children: [
                       _selectedBytes != null
                           ? Image.memory(
-                              _selectedBytes,
+                              _selectedBytes!,
                               fit: BoxFit.cover,
                             )
                           : _null,
                       _selectedImagePath != null
                           ? Image.file(
-                              File(_selectedImagePath),
+                              File(_selectedImagePath!),
                               fit: BoxFit.cover,
                             )
                           : _null,
@@ -161,7 +167,7 @@ class _CameraRollUploaderState extends State<CameraRollUploader> {
 
 class LoadingBar extends StatelessWidget {
   const LoadingBar({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
