@@ -23,6 +23,11 @@ class _MyAppState extends State<MyApp> {
             limit: 15,
             selectedImageCallback: (imagePath) {
               print(imagePath);
+              // you can create an Image with this local path
+              // Image.file(
+              //   File(imagePath!),
+              //   fit: BoxFit.cover,
+              // )
             },
           ),
           floatingActionButton: Column(
