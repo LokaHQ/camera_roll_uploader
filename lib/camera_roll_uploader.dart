@@ -4,19 +4,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:json_annotation/json_annotation.dart';
-
-class ByteArrayJsonConverter
-    implements JsonConverter<Uint8List, List<dynamic>> {
-  const ByteArrayJsonConverter();
-
-  @override
-  Uint8List fromJson(List<dynamic> json) =>
-      Uint8List.fromList(json.cast<int>());
-
-  @override
-  List<dynamic> toJson(Uint8List list) => List<dynamic>.from(list);
-}
 
 class CameraRollUploader extends StatefulWidget {
   CameraRollUploader({this.limit = 21, this.selectedImageCallback});
@@ -61,8 +48,7 @@ class _CameraRollUploaderState extends State<CameraRollUploader> {
       },
     );
     for (var data in dataImagesList) {
-      var uint8list = ByteArrayJsonConverter().fromJson(data);
-      _bytesImages.add(uint8list);
+      _bytesImages.add(Uint8List.fromList(data));
     }
     _currentCursor += dataImagesList.length;
     if (cursor == 0) {
@@ -145,7 +131,10 @@ class _CameraRollUploaderState extends State<CameraRollUploader> {
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () => _selectImage(index),
-                    child: Image.memory(_bytesImages[index]),
+                    child: Image.memory(
+                      _bytesImages[index],
+                      fit: BoxFit.cover,
+                    ),
                   );
                 },
                 itemCount: _bytesImages.length,
