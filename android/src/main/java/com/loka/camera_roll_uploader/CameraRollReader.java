@@ -71,15 +71,15 @@ public class CameraRollReader {
             permissionsGrantedCallback.onPermissionsGranted();
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-
-            int accessMediaLocation = ContextCompat.checkSelfPermission(applicationContext, ACCESS_MEDIA_LOCATION);
-            Log.e("ACCESS_MEDIA_LOCATION", String.valueOf(accessMediaLocation));
-            if (accessMediaLocation == PERMISSION_DENIED) {
-
-                ActivityCompat.requestPermissions(applicationActivity, new String[] { ACCESS_MEDIA_LOCATION }, ACCESS_MEDIA_LOCATION_CODE);
-            }
-        }
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+//
+//            int accessMediaLocation = ContextCompat.checkSelfPermission(applicationContext, ACCESS_MEDIA_LOCATION);
+//            Log.e("ACCESS_MEDIA_LOCATION", String.valueOf(accessMediaLocation));
+//            if (accessMediaLocation == PERMISSION_DENIED) {
+//
+//                ActivityCompat.requestPermissions(applicationActivity, new String[] { ACCESS_MEDIA_LOCATION }, ACCESS_MEDIA_LOCATION_CODE);
+//            }
+//        }
     }
 
     public void fetchGalleryImages(final int limit, final int cursor) {
@@ -93,10 +93,9 @@ public class CameraRollReader {
 
     private void getImages(int limit, int cursor) {
         Log.e("get images", "limit " + String.valueOf(limit) + ", cursor " + String.valueOf(cursor));
-        ArrayList<byte[]> dataImagesArray = new ArrayList<>();
+        ArrayList<String> dataImagesArray = new ArrayList<>();
 
         final String[] columns = {MediaStore.Images.Media.DATA,
-                                  MediaStore.Images.Media.MINI_THUMB_MAGIC,
                                   MediaStore.Images.Media._ID};
         final String orderBy = MediaStore.Images.Media.DATE_ADDED;
 
@@ -108,22 +107,13 @@ public class CameraRollReader {
                 orderBy + " DESC");
 
         Log.e("fetched", imageCursor.getCount() + " images");
-//        for (int i = 0; i < imageCursor.getCount(); i++) {
         for (int i = cursor; i < (limit + cursor) - 1; i++) {
             if (i == imageCursor.getCount()) {
                 break;
             }
             imageCursor.moveToPosition(i);
             int dataColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
-            Log.e("path", imageCursor.getString(dataColumnIndex));
-
-            Bitmap src = BitmapFactory.decodeFile(imageCursor.getString(dataColumnIndex));
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            src.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] blobImage = baos.toByteArray();
-
-//            byte[] blobImage = imageCursor.getBlob(dataColumnIndex);
-            dataImagesArray.add(blobImage);
+            dataImagesArray.add(imageCursor.getString(dataColumnIndex));
         }
 
         imageCursor.close();

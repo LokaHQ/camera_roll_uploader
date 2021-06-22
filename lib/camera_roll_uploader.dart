@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class CameraRollUploader extends StatefulWidget {
@@ -14,28 +15,45 @@ class CameraRollUploader extends StatefulWidget {
   _CameraRollUploaderState createState() => _CameraRollUploaderState();
 }
 
-class _CameraRollUploaderState extends State<CameraRollUploader> {
+class _CameraRollUploaderState extends State<CameraRollUploader>
+    with WidgetsBindingObserver {
   static const MethodChannel _channel =
       const MethodChannel('camera_roll_uploader');
 
   List<Uint8List> _bytesImages = [];
+  List<String> _pathImages = [];
+
   var _scrollController = ScrollController();
+  var _headerScrollController = ScrollController();
   var _currentCursor = 0;
   String? _selectedImagePath;
-  Uint8List? _selectedBytes;
   var _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addObserver(this);
     _fetchImages(_currentCursor);
-    _scrollController.addListener(() {
-      if (_scrollController.position.atEdge) {
-        if (_scrollController.position.pixels != 0) {
-          _fetchImages(_currentCursor);
-        }
+    _scrollController.addListener(_mainScrollControllerListener);
+    _headerScrollController.addListener(_headerControllerListener);
+  }
+
+  void _mainScrollControllerListener() {
+    if (_scrollController.position.atEdge) {
+      if (_scrollController.position.pixels != 0) {
+        _fetchImages(_currentCursor);
+      } else {
+        _headerScrollController.animateTo(0,
+            duration: Duration(milliseconds: 200), curve: Curves.easeIn);
       }
-    });
+    }
+  }
+
+  void _headerControllerListener() {
+    if (_headerScrollController.offset >=
+        (MediaQuery.of(context).size.width / 1.5)) {
+      _headerScrollController.jumpTo((MediaQuery.of(context).size.width / 1.5));
+    }
   }
 
   Future<void> _fetchImages(int cursor) async {
@@ -47,8 +65,14 @@ class _CameraRollUploaderState extends State<CameraRollUploader> {
         'cursor': cursor,
       },
     );
-    for (var data in dataImagesList) {
-      _bytesImages.add(Uint8List.fromList(data));
+    if (Platform.isIOS) {
+      for (var data in dataImagesList) {
+        _bytesImages.add(Uint8List.fromList(data));
+      }
+    } else {
+      for (var path in dataImagesList) {
+        _pathImages.add(path);
+      }
     }
     _currentCursor += dataImagesList.length;
     if (cursor == 0) {
@@ -61,7 +85,6 @@ class _CameraRollUploaderState extends State<CameraRollUploader> {
     setState(() {
       _selectedImagePath = null;
       _isLoading = true;
-      _selectedBytes = _bytesImages[index];
     });
     _selectedImagePath = await _channel.invokeMethod(
       'select_photo_camera_roll',
@@ -76,72 +99,83 @@ class _CameraRollUploaderState extends State<CameraRollUploader> {
       this.widget.selectedImageCallback!(_selectedImagePath!);
     } catch (e) {
       print(
-          "there's no image path because selectedImageCallback(String imagePath) is null");
+          "there's no image path because selectedImageCallback(String imagePath) is null at index $index");
     }
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print("resumed");
+      var _currentCursor = 0;
+      _fetchImages(_currentCursor);
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: Stack(
-              alignment: Alignment.center,
-              fit: StackFit.expand,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(bottom: 5),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    fit: StackFit.expand,
-                    children: [
-                      _selectedBytes != null
-                          ? Image.memory(
-                              _selectedBytes!,
-                              fit: BoxFit.cover,
-                            )
-                          : _null,
-                      _selectedImagePath != null
-                          ? Image.file(
-                              File(_selectedImagePath!),
-                              fit: BoxFit.cover,
-                            )
-                          : _null,
-                    ],
+    return NestedScrollView(
+      physics: NeverScrollableScrollPhysics(),
+      controller: _headerScrollController,
+      headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
+        // print(boxIsScrolled);
+        return <Widget>[
+          SliverToBoxAdapter(
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Stack(
+                alignment: Alignment.center,
+                fit: StackFit.expand,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: _selectedImagePath != null
+                        ? Image.file(
+                            File(_selectedImagePath!),
+                            fit: BoxFit.cover,
+                          )
+                        : _null,
                   ),
-                ),
-                _isLoading ? LoadingBar() : _null,
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                controller: _scrollController,
-                physics: ClampingScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 1,
-                  mainAxisSpacing: 5.0,
-                  crossAxisSpacing: 5.0,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () => _selectImage(index),
-                    child: Image.memory(
-                      _bytesImages[index],
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                },
-                itemCount: _bytesImages.length,
+                  _isLoading ? LoadingBar() : _null,
+                ],
               ),
             ),
           ),
-        ],
+        ];
+      },
+      body: Container(
+        child: GridView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+          controller: _scrollController,
+          physics: ClampingScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 1,
+            mainAxisSpacing: 5.0,
+            crossAxisSpacing: 5.0,
+          ),
+          itemBuilder: (BuildContext context, int index) {
+            return GestureDetector(
+              onTap: () => _selectImage(index),
+              child: Platform.isIOS
+                  ? Image.memory(
+                      _bytesImages[index],
+                      fit: BoxFit.cover,
+                    )
+                  : Image.file(
+                      File(_pathImages[index]),
+                      fit: BoxFit.cover,
+                    ),
+            );
+          },
+          itemCount: Platform.isIOS ? _bytesImages.length : _pathImages.length,
+        ),
       ),
     );
   }
