@@ -42,7 +42,6 @@ class CameraRollReader: NSObject {
         let allPhotos = fetchAssets()
         var dataImagesArray: [FlutterStandardTypedData] = []
         for i in cursor...(fetchCount + cursor) - 1 {
-            print(i)
             let asset = allPhotos.object(at: i)
             imageManager.requestImage(for: asset,
                                       targetSize: CGSize(width: 200, height: 200),
