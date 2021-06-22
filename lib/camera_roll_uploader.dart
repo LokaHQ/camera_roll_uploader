@@ -22,6 +22,7 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
 
   List<Uint8List> _bytesImages = [];
   List<String> _pathImages = [];
+  bool _animating = false;
 
   var _gridViewScrollController = ScrollController();
   var _headerScrollController = ScrollController();
@@ -38,7 +39,24 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
     _headerScrollController.addListener(_headerScrollControllerListener);
   }
 
+  void _animateTo({bool half = false}) {
+    if (_animating) return;
+    _animating = true;
+    _headerScrollController
+        .animateTo(half ? (MediaQuery.of(context).size.width / 2) : 0,
+            duration: Duration(milliseconds: 200), curve: Curves.linear)
+        .then((value) => _animating = false);
+  }
+
   void _gridViewScrollControllerListener() {
+    if (_gridViewScrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      _animateTo(half: true);
+    }
+    if (_gridViewScrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      _animateTo(half: false);
+    }
     if (_gridViewScrollController.position.atEdge) {
       if (_gridViewScrollController.position.pixels != 0) {
         _fetchImages(_currentCursor);
@@ -54,12 +72,15 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
 
   void _headerScrollControllerListener() {
     if (_headerScrollController.offset >=
-        (MediaQuery.of(context).size.width / 1.5)) {
-      _headerScrollController.jumpTo((MediaQuery.of(context).size.width / 1.5));
+        (MediaQuery.of(context).size.width / 2)) {
+      _headerScrollController.jumpTo((MediaQuery.of(context).size.width / 2));
     }
   }
 
   Future<void> _fetchImages(int cursor) async {
+    if (widget.limit < 21) {
+      throw Exception("`limit` parameter should be greater than 21 or deleted");
+    }
     List<dynamic> dataImagesList = await _channel.invokeMethod(
       'fetch_photos_camera_roll',
       {
@@ -84,6 +105,8 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
   }
 
   Future<void> _selectImage(int index) async {
+    _headerScrollController.animateTo(0,
+        duration: Duration(milliseconds: 200), curve: Curves.linear);
     setState(() {
       _selectedImagePath = null;
       _isLoading = true;

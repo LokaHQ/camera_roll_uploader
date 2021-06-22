@@ -20,7 +20,6 @@ class _MyAppState extends State<MyApp> {
             title: Text("Embedded Camera Roll Picker"),
           ),
           body: CameraRollUploader(
-            limit: 15,
             selectedImageCallback: (imagePath) {
               print(imagePath);
               // you can create an Image with this local path
@@ -76,8 +75,8 @@ class _MyAppState extends State<MyApp> {
           return Scaffold(
             appBar: SkinnoAppBar(),
             body: CameraRollUploader(
-              limit: 15,
-            ),
+                // limit: 15,
+                ),
           );
         },
       ),
