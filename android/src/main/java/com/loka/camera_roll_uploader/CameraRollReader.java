@@ -115,15 +115,17 @@ public class CameraRollReader {
             }
             imageCursor.moveToPosition(i);
             int dataColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
-            Log.e("path", imageCursor.getString(dataColumnIndex));
-
-            Bitmap src = BitmapFactory.decodeFile(imageCursor.getString(dataColumnIndex));
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            src.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] blobImage = baos.toByteArray();
-
+            
+            try {
+                Bitmap src = BitmapFactory.decodeFile(imageCursor.getString(dataColumnIndex));
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                src.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] blobImage = baos.toByteArray();
 //            byte[] blobImage = imageCursor.getBlob(dataColumnIndex);
-            dataImagesArray.add(blobImage);
+                dataImagesArray.add(blobImage);
+            } catch (Exception e) {
+                Log.d("Exception", e.getMessage());
+            }
         }
 
         imageCursor.close();
