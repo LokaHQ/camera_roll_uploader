@@ -91,9 +91,13 @@ public class CameraRollReader {
             if (i == imageCursor.getCount()) {
                 break;
             }
-            imageCursor.moveToPosition(i);
-            int dataColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
-            dataImagesArray.add(imageCursor.getString(dataColumnIndex));
+            try {
+                imageCursor.moveToPosition(i);
+                int dataColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
+                dataImagesArray.add(imageCursor.getString(dataColumnIndex));
+            } catch (Exception e) {
+                Log.d("Exception", e.getMessage());
+            }
         }
 
         imageCursor.close();
