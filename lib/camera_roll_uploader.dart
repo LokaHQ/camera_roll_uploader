@@ -23,7 +23,7 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
   List<Uint8List> _bytesImages = [];
   List<String> _pathImages = [];
 
-  var _scrollController = ScrollController();
+  var _gridViewScrollController = ScrollController();
   var _headerScrollController = ScrollController();
   var _currentCursor = 0;
   String? _selectedImagePath;
@@ -34,22 +34,25 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
     _fetchImages(_currentCursor);
-    _scrollController.addListener(_mainScrollControllerListener);
-    _headerScrollController.addListener(_headerControllerListener);
+    _gridViewScrollController.addListener(_gridViewScrollControllerListener);
+    _headerScrollController.addListener(_headerScrollControllerListener);
   }
 
-  void _mainScrollControllerListener() {
-    if (_scrollController.position.atEdge) {
-      if (_scrollController.position.pixels != 0) {
+  void _gridViewScrollControllerListener() {
+    if (_gridViewScrollController.position.atEdge) {
+      if (_gridViewScrollController.position.pixels != 0) {
         _fetchImages(_currentCursor);
       } else {
-        _headerScrollController.animateTo(0,
-            duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+        _headerScrollController.animateTo(
+          0,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeIn,
+        );
       }
     }
   }
 
-  void _headerControllerListener() {
+  void _headerScrollControllerListener() {
     if (_headerScrollController.offset >=
         (MediaQuery.of(context).size.width / 1.5)) {
       _headerScrollController.jumpTo((MediaQuery.of(context).size.width / 1.5));
@@ -57,7 +60,6 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
   }
 
   Future<void> _fetchImages(int cursor) async {
-    print("current cursor $cursor");
     List<dynamic> dataImagesList = await _channel.invokeMethod(
       'fetch_photos_camera_roll',
       {
@@ -152,7 +154,7 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
       body: Container(
         child: GridView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 5.0),
-          controller: _scrollController,
+          controller: _gridViewScrollController,
           physics: ClampingScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
