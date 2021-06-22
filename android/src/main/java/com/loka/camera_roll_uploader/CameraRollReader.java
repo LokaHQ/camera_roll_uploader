@@ -32,7 +32,6 @@ public class CameraRollReader {
     private final Context applicationContext;
     private final Activity applicationActivity;
     private final int READ_EXTERNAL_STORAGE_CODE = 1010101;
-    private final int ACCESS_MEDIA_LOCATION_CODE = 1010102;
     private final Result result;
 
     CameraRollReader(Context context, Activity activity, Result result) {
@@ -42,26 +41,6 @@ public class CameraRollReader {
     }
 
     private void checkForPermissions(final PermissionsGrantedCallback permissionsGrantedCallback) {
-        final ArrayList<Integer> permissionsGranted = new ArrayList<>();
-
-        new ActivityCompat.OnRequestPermissionsResultCallback() {
-            @Override
-            public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-                if (requestCode == READ_EXTERNAL_STORAGE_CODE) {
-                    if (grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED) {
-                        permissionsGranted.add(READ_EXTERNAL_STORAGE_CODE);
-                    }
-                }
-                if (requestCode == ACCESS_MEDIA_LOCATION_CODE) {
-                    if (grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED) {
-                        permissionsGranted.add(ACCESS_MEDIA_LOCATION_CODE);
-                    }
-                }
-                if (permissionsGranted.size() > 1) { // TODO: should be == 2 if android.os.Build.VERSION_CODES.Q
-                    permissionsGrantedCallback.onPermissionsGranted();
-                }
-            }
-        };
 
         int readExternalStorage = ContextCompat.checkSelfPermission(applicationContext, READ_EXTERNAL_STORAGE);
         Log.e("READ_EXTERNAL_STORAGE", String.valueOf(readExternalStorage));
@@ -71,15 +50,16 @@ public class CameraRollReader {
             permissionsGrantedCallback.onPermissionsGranted();
         }
 
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-//
-//            int accessMediaLocation = ContextCompat.checkSelfPermission(applicationContext, ACCESS_MEDIA_LOCATION);
-//            Log.e("ACCESS_MEDIA_LOCATION", String.valueOf(accessMediaLocation));
-//            if (accessMediaLocation == PERMISSION_DENIED) {
-//
-//                ActivityCompat.requestPermissions(applicationActivity, new String[] { ACCESS_MEDIA_LOCATION }, ACCESS_MEDIA_LOCATION_CODE);
-//            }
-//        }
+        new ActivityCompat.OnRequestPermissionsResultCallback() {
+            @Override
+            public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+                if (requestCode == READ_EXTERNAL_STORAGE_CODE) {
+                    if (grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED) {
+                        permissionsGrantedCallback.onPermissionsGranted();
+                    }
+                }
+            }
+        };
     }
 
     public void fetchGalleryImages(final int limit, final int cursor) {
