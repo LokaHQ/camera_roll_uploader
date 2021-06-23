@@ -69,7 +69,7 @@ class CameraRollReader: NSObject {
         options.resizeMode = .fast
         options.version = .current
         options.progressHandler = { (progress, error, pointer, info) in
-            print("-----> \(progress)")
+            //
         }
         
         var size: CGFloat = 800
@@ -85,7 +85,7 @@ class CameraRollReader: NSObject {
                                     let editOptions = PHContentEditingInputRequestOptions()
                                     editOptions.isNetworkAccessAllowed = true
                                     editOptions.progressHandler = { (progress, pointer) in
-                                        print(progress)
+                                        //
                                     }
                                     asset.requestContentEditingInput(with: editOptions) { (input, info) in
                                         if let input = input {
