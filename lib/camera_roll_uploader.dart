@@ -28,6 +28,8 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
   var _headerScrollController = ScrollController();
   var _currentCursor = 0;
   String? _selectedImagePath;
+  Uint8List? _selectedBytes;
+
   var _isLoading = false;
 
   @override
@@ -110,6 +112,7 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
     setState(() {
       _selectedImagePath = null;
       _isLoading = true;
+      _selectedBytes = _bytesImages[index];
     });
     _selectedImagePath = await _channel.invokeMethod(
       'select_photo_camera_roll',
@@ -160,12 +163,24 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
                 children: [
                   Container(
                     padding: const EdgeInsets.only(bottom: 5),
-                    child: _selectedImagePath != null
-                        ? Image.file(
-                            File(_selectedImagePath!),
-                            fit: BoxFit.cover,
-                          )
-                        : _null,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      fit: StackFit.expand,
+                      children: [
+                        _selectedBytes != null
+                            ? Image.memory(
+                                _selectedBytes!,
+                                fit: BoxFit.cover,
+                              )
+                            : _null,
+                        _selectedImagePath != null
+                            ? Image.file(
+                                File(_selectedImagePath!),
+                                fit: BoxFit.cover,
+                              )
+                            : _null,
+                      ],
+                    ),
                   ),
                   _isLoading ? LoadingBar() : _null,
                 ],

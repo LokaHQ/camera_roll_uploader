@@ -73,57 +73,11 @@ class _MyAppState extends State<MyApp> {
         fullscreenDialog: isModal,
         builder: (BuildContext context) {
           return Scaffold(
-            appBar: SkinnoAppBar(),
-            body: CameraRollUploader(
-                // limit: 15,
-                ),
+            appBar: AppBar(),
+            body: CameraRollUploader(),
           );
         },
       ),
     );
   }
-}
-
-class SkinnoAppBar extends StatelessWidget implements PreferredSize {
-  const SkinnoAppBar({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: const Text(
-        'Camera Roll Picker',
-        style: TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-      ),
-      elevation: 0.0,
-      backgroundColor: Colors.white,
-      iconTheme: IconThemeData(
-        color: Colors.black,
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {},
-          child: Text(
-            "Next",
-            style: TextStyle(
-              color: Color.fromRGBO(0, 109, 119, 1.0),
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget get child => null;
 }
