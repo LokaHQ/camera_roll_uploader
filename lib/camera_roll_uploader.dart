@@ -7,9 +7,14 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class CameraRollUploader extends StatefulWidget {
-  CameraRollUploader({this.limit = 21, this.selectedImageCallback});
+  CameraRollUploader({
+    this.limit = 21,
+    this.selectedImageCallback,
+    this.isDownloadingImage,
+  });
   final int limit;
   final Function(String)? selectedImageCallback;
+  final Function(bool)? isDownloadingImage;
 
   @override
   _CameraRollUploaderState createState() => _CameraRollUploaderState();
@@ -31,10 +36,20 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
   Uint8List? _selectedBytes;
 
   var _isLoading = false;
+  late Function(bool) _isDownloadingImage;
+  late Function(String) _selectedImageCallback;
 
   @override
   void initState() {
     super.initState();
+    _isDownloadingImage = widget.isDownloadingImage ??
+        (value) {
+          print("downloading $value");
+        };
+    _selectedImageCallback = widget.selectedImageCallback ??
+        (imagePath) {
+          print("imagePath $imagePath");
+        };
     WidgetsBinding.instance!.addObserver(this);
     _fetchImages(_currentCursor);
     _gridViewScrollController.addListener(_gridViewScrollControllerListener);
@@ -63,11 +78,12 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
       if (_gridViewScrollController.position.pixels != 0) {
         _fetchImages(_currentCursor);
       } else {
-        _headerScrollController.animateTo(
-          0,
-          duration: Duration(milliseconds: 200),
-          curve: Curves.easeIn,
-        );
+        // _headerScrollController.animateTo(
+        //   0,
+        //   duration: Duration(milliseconds: 200),
+        //   curve: Curves.easeIn,
+        // );
+        _animateTo(half: false);
       }
     }
   }
@@ -107,13 +123,15 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
   }
 
   Future<void> _selectImage(int index) async {
-    _headerScrollController.animateTo(0,
-        duration: Duration(milliseconds: 200), curve: Curves.linear);
+    // _headerScrollController.animateTo(0,
+    //     duration: Duration(milliseconds: 200), curve: Curves.linear);
+    _animateTo(half: false);
     setState(() {
       _selectedImagePath = null;
       _isLoading = true;
       _selectedBytes = _bytesImages[index];
     });
+    _isDownloadingImage(_isLoading);
     _selectedImagePath = await _channel.invokeMethod(
       'select_photo_camera_roll',
       {
@@ -123,12 +141,8 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
     setState(() {
       _isLoading = false;
     });
-    try {
-      this.widget.selectedImageCallback!(_selectedImagePath!);
-    } catch (e) {
-      print(
-          "there's no image path because selectedImageCallback(String imagePath) is null at index $index");
-    }
+    _isDownloadingImage(_isLoading);
+    _selectedImageCallback(_selectedImagePath ?? "");
   }
 
   @override

@@ -20,8 +20,11 @@ class _MyAppState extends State<MyApp> {
             title: Text("Embedded Camera Roll Picker"),
           ),
           body: CameraRollUploader(
+            isDownloadingImage: (downloading) {
+              print("downloading $downloading");
+            },
             selectedImageCallback: (imagePath) {
-              print(imagePath);
+              print("imagePath $imagePath");
               // you can create an Image with this local path
               // Image.file(
               //   File(imagePath!),
