@@ -78,11 +78,6 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
       if (_gridViewScrollController.position.pixels != 0) {
         _fetchImages(_currentCursor);
       } else {
-        // _headerScrollController.animateTo(
-        //   0,
-        //   duration: Duration(milliseconds: 200),
-        //   curve: Curves.easeIn,
-        // );
         _animateTo(half: false);
       }
     }
