@@ -1,6 +1,10 @@
 # camera_roll_uploader
 
-A flutter plugin to pick an image from iOS camera roll or Android image gallery. It can be used as an embedded widget wherever you want, so you can use your own AppBar actions buttons or you can open it modally as any other picker.
+A flutter plugin to pick an image from iOS camera roll or Android image gallery. 
+
+- It can be used as an embedded widget wherever you want, so you can use your own AppBar actions buttons or you can open it modally as any other picker.
+
+- Background color can be changed by changing the color of the parent widget.
 
 ![screenshot](https://user-images.githubusercontent.com/14978705/123599875-5ef56800-d7f6-11eb-888c-76cdbd3280da.jpg)
 
