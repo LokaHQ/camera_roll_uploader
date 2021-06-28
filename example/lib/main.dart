@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:camera_roll_uploader/camera_roll_uploader.dart';
 import 'package:flutter/material.dart';
 
@@ -35,21 +37,26 @@ class _MyAppState extends State<MyApp> {
           floatingActionButton: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: FloatingActionButton(
-                    heroTag: "modal",
-                    child: Text(
-                      "SHOW\nMODAL",
-                      textAlign: TextAlign.center,
+              (Platform.isIOS)
+                  ? Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: FloatingActionButton(
+                          heroTag: "modal",
+                          child: Text(
+                            "SHOW\nMODAL",
+                            textAlign: TextAlign.center,
+                          ),
+                          onPressed: () => _openPicker(context),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      width: 0.0,
+                      height: 0.0,
                     ),
-                    onPressed: () => _openPicker(context),
-                  ),
-                ),
-              ),
               SizedBox(
                 width: 80,
                 height: 80,
