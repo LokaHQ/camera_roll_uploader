@@ -1,6 +1,9 @@
 # camera_roll_uploader
 
-A new flutter plugin project.
+A flutter plugin to pick an image from iOS camera roll or Android image gallery.
+
+![screenshot](https://user-images.githubusercontent.com/14978705/123599875-5ef56800-d7f6-11eb-888c-76cdbd3280da.jpg)
+
 
 ## Usage example
 
