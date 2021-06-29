@@ -1,8 +1,7 @@
 name: camera_roll_uploader
-description: A new flutter plugin project.
+description: A flutter plugin to pick an image from iOS camera roll or Android image gallery.
 version: 0.0.1
-author:
-homepage:
+homepage: https://loka.com
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
