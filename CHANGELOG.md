@@ -1,3 +1,11 @@
-## 0.0.1
+## [0.0.3]
 
-* TODO: Describe initial release.
+- Updated homepage
+
+## [0.0.2]
+
+- Updated licence
+
+## [0.0.1]
+
+- Initial release.
