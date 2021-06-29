@@ -1,5 +1,9 @@
 ## [0.0.3]
 
+- Updated README.md
+
+## [0.0.3]
+
 - Updated homepage
 
 ## [0.0.2]
