@@ -1,10 +1,36 @@
-# camera_roll_uploader
+# Camera Roll Uploader
 
-A flutter plugin to pick an image from iOS camera roll or Android image gallery.
+## A flutter plugin to pick an image from iOS camera roll or Android image gallery. Layout on flutter side, business logic on native side.
 
-- It can be used as an embedded widget wherever you want, so you can use your own AppBar actions buttons or you can open it modally as any other picker.
+![loka_linkedin_bg](https://user-images.githubusercontent.com/14978705/124147816-54a1cb00-da8f-11eb-9ff1-52669cd122ad.png)
 
-- Background color can be changed by changing the color of the parent widget.
+Made with 💙 by **Loka Inc.** [https://loka.com](https://loka.com)
+
+<hr>
+
+### Description
+
+You just need to add `CameraRollUploader()` in any place you want in your screen or you can open it madly like any other picker
+
+```
+Navigator.of(context).push(
+  MaterialPageRoute(
+    builder: (BuildContext context) {
+      return Scaffold(
+        body: CameraRollUploader(),
+      );
+    },
+  ),
+);
+```
+
+- It can be used as an embedded widget wherever you want, so you can use your own AppBar's actions buttons or you can open it modally as any other picker.
+
+- You can control wether the image is ready or not, for example, when it's stored on iCloud and should be downloaded from there.
+
+- Background color can be changed by changing the color of it parent widget.
+
+- **Permissions** are already handled natively, you don't need to ask for them, the plugin do it itself.
 
 ![screenshot](https://user-images.githubusercontent.com/14978705/123599875-5ef56800-d7f6-11eb-888c-76cdbd3280da.jpg)
 
