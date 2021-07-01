@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
                             "SHOW\nMODAL",
                             textAlign: TextAlign.center,
                           ),
-                          onPressed: () => _openPicker(),
+                          onPressed: () => _openPicker(context),
                         ),
                       ),
                     )
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
                     "SHOW\nPUSH",
                     textAlign: TextAlign.center,
                   ),
-                  onPressed: () => _openPicker(isModal: false),
+                  onPressed: () => _openPicker(context, isModal: false),
                 ),
               )
             ],
@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _openPicker({bool isModal = true}) {
+  void _openPicker(BuildContext context, {bool isModal = true}) {
     Navigator.of(context).push(
       MaterialPageRoute(
         fullscreenDialog: isModal,

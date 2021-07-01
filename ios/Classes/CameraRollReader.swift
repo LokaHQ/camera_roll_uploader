@@ -38,25 +38,63 @@ class CameraRollReader: NSObject {
         return requestOptions
     }
     
+    private func checkIsAuthorized(completion: ((Bool) -> Void)!) {
+        let photoAuthorizationStatus = PHPhotoLibrary.authorizationStatus()
+        switch photoAuthorizationStatus {
+            case .authorized:
+                completion(true)
+                break
+            case .notDetermined:
+                PHPhotoLibrary.requestAuthorization({ (newStatus) in
+                    DispatchQueue.main.async {
+                        if newStatus ==  PHAuthorizationStatus.authorized {
+                            completion(true)
+                        } else {
+                            completion(false)
+                        }
+                    }
+                })
+                break
+            case .restricted:
+                completion(false)
+                break
+            case .denied:
+                completion(false)
+                break
+            case .limited:
+                completion(true)
+                break
+            default:
+                print("default")
+                break
+        }
+    }
+    
     func fetchAllPhotos(fetchCount: Int, cursor: Int, result: @escaping FlutterResult) {
-        let allPhotos = fetchAssets()
-        var dataImagesArray: [FlutterStandardTypedData] = []
-        for i in cursor...(fetchCount + cursor) - 1 {
-            let asset = allPhotos.object(at: i)
-            imageManager.requestImage(for: asset,
-                                      targetSize: CGSize(width: 200, height: 200),
-                                      contentMode: .aspectFill,
-                                      options: getRequestOptions(),
-                                      resultHandler: { image, _ in
-                                        if let image = image {
-                                            if let data = image.pngData() {
-                                                dataImagesArray.append(FlutterStandardTypedData(bytes: data))
-                                                if i == (fetchCount + cursor) - 1 {
-                                                    result(dataImagesArray)
+        checkIsAuthorized { authorized in
+            if authorized {
+                let allPhotos = self.fetchAssets()
+                print("\(allPhotos.count) images")
+                var dataImagesArray: [FlutterStandardTypedData] = []
+                let finishLoopAt = min(allPhotos.count - 1, (fetchCount + cursor) - 1)
+                for i in cursor...finishLoopAt {
+                    let asset = allPhotos.object(at: i)
+                    self.imageManager.requestImage(for: asset,
+                                              targetSize: CGSize(width: 200, height: 200),
+                                              contentMode: .aspectFill,
+                                              options: self.getRequestOptions(),
+                                              resultHandler: { image, _ in
+                                                if let image = image {
+                                                    if let data = image.pngData() {
+                                                        dataImagesArray.append(FlutterStandardTypedData(bytes: data))
+                                                        if i == finishLoopAt {
+                                                            result(dataImagesArray)
+                                                        }
+                                                    }
                                                 }
-                                            }
-                                        }
-                                      })
+                                              })
+                }
+            }
         }
     }
     

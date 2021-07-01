@@ -20,8 +20,7 @@ class CameraRollUploader extends StatefulWidget {
   _CameraRollUploaderState createState() => _CameraRollUploaderState();
 }
 
-class _CameraRollUploaderState extends State<CameraRollUploader>
-    with WidgetsBindingObserver {
+class _CameraRollUploaderState extends State<CameraRollUploader> {
   static const MethodChannel _channel =
       const MethodChannel('camera_roll_uploader');
 
@@ -50,7 +49,6 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
         (imagePath) {
           print("imagePath $imagePath");
         };
-    WidgetsBinding.instance!.addObserver(this);
     _fetchImages(_currentCursor);
     _gridViewScrollController.addListener(_gridViewScrollControllerListener);
     _headerScrollController.addListener(_headerScrollControllerListener);
@@ -91,40 +89,46 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
   }
 
   Future<void> _fetchImages(int cursor) async {
+    print(widget.limit);
     if (widget.limit < 21) {
       throw Exception("`limit` parameter should be greater than 21 or deleted");
     }
-    List<dynamic> dataImagesList = await _channel.invokeMethod(
-      'fetch_photos_camera_roll',
-      {
-        'limit': widget.limit,
-        'cursor': cursor,
-      },
-    );
-    if (Platform.isIOS) {
-      for (var data in dataImagesList) {
-        _bytesImages.add(Uint8List.fromList(data));
+    try {
+      List<dynamic> dataImagesList = await _channel.invokeMethod(
+        'fetch_photos_camera_roll',
+        {
+          'limit': widget.limit,
+          'cursor': cursor,
+        },
+      );
+      print("${dataImagesList.length} images");
+      if (Platform.isIOS) {
+        for (var data in dataImagesList) {
+          _bytesImages.add(Uint8List.fromList(data));
+        }
+      } else {
+        for (var path in dataImagesList) {
+          _pathImages.add(path);
+        }
       }
-    } else {
-      for (var path in dataImagesList) {
-        _pathImages.add(path);
+      _currentCursor += dataImagesList.length;
+      if (cursor == 0) {
+        _selectImage(0);
       }
+      setState(() {});
+    } catch (e) {
+      print(e.toString());
     }
-    _currentCursor += dataImagesList.length;
-    if (cursor == 0) {
-      _selectImage(0);
-    }
-    setState(() {});
   }
 
   Future<void> _selectImage(int index) async {
-    // _headerScrollController.animateTo(0,
-    //     duration: Duration(milliseconds: 200), curve: Curves.linear);
     _animateTo(half: false);
     setState(() {
       _selectedImagePath = null;
       _isLoading = true;
-      _selectedBytes = _bytesImages[index];
+      if (Platform.isIOS) {
+        _selectedBytes = _bytesImages[index];
+      }
     });
     _isDownloadingImage(_isLoading);
     _selectedImagePath = await _channel.invokeMethod(
@@ -138,21 +142,6 @@ class _CameraRollUploaderState extends State<CameraRollUploader>
     });
     _isDownloadingImage(_isLoading);
     _selectedImageCallback(_selectedImagePath ?? "");
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      print("resumed");
-      var _currentCursor = 0;
-      _fetchImages(_currentCursor);
-    }
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
-    super.dispose();
   }
 
   @override

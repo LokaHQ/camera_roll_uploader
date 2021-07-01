@@ -21,6 +21,7 @@ import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static java.lang.Math.min;
 
 //define callback interface
 interface PermissionsGrantedCallback {
@@ -86,11 +87,8 @@ public class CameraRollReader {
                 null,
                 orderBy + " DESC");
 
-        Log.e("fetched", imageCursor.getCount() + " images");
-        for (int i = cursor; i < (limit + cursor) - 1; i++) {
-            if (i == imageCursor.getCount()) {
-                break;
-            }
+        final int finishLoopAt = min(imageCursor.getCount(), (limit + cursor));
+        for (int i = cursor; i < finishLoopAt; i++) {
             try {
                 imageCursor.moveToPosition(i);
                 int dataColumnIndex = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA);
