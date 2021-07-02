@@ -1,16 +1,9 @@
-# camera_roll_uploader_example
+# Camera Roll Uploader example
 
 Demonstrates how to use the camera_roll_uploader plugin.
 
-## Getting Started
+![v1](https://user-images.githubusercontent.com/14978705/124298979-30142480-db5d-11eb-8f57-127b4d47e230.png)
 
-This project is a starting point for a Flutter application.
+Made with 💙 by **Loka Inc.** [https://loka.com](https://loka.com)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<hr>

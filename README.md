@@ -10,7 +10,7 @@ Made with 💙 by **Loka Inc.** [https://loka.com](https://loka.com)
 
 ### Description
 
-You just need to add `CameraRollUploader()` in any place you want in your screen or you can open it madly like any other picker
+You just need to add `CameraRollUploader()` in any place you want in your screen or you can open it modally like any other picker
 
 ```
 Navigator.of(context).push(
@@ -26,11 +26,27 @@ Navigator.of(context).push(
 
 - It can be used as an embedded widget wherever you want, so you can use your own AppBar's actions buttons or you can open it modally as any other picker.
 
-- You can control wether the image is ready or not, for example, when it's stored on iCloud and should be downloaded from there.
+- You can control wether the image is ready or not, for example, when it's stored on iCloud and should be downloaded from there first.
 
 - Background color can be changed by changing the color of it parent widget.
 
-- **Permissions** are already handled natively, you don't need to ask for them, the plugin do it itself.
+- **Permissions** requests are already handled natively, you don't need to ask for them, the plugin do it itself, just add
+
+on Android manifest...
+
+```
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
+```
+
+and on iOS Info.plist
+
+```
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Your permissions explanation here</string>
+```
+
+<hr>
 
 ![screenshot](https://user-images.githubusercontent.com/14978705/123599875-5ef56800-d7f6-11eb-888c-76cdbd3280da.jpg)
 

@@ -43,9 +43,9 @@
 	<false/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Displays and edits photos to demonstrate the Photos framework.</string>
-    <key>NSAppleMusicUsageDescription</key>
-    <string>Displays and edits photos to demonstrate the Photos framework.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Displays and edits photos to demonstrate the Photos framework.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Displays and edits photos to demonstrate the Photos framework.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Displays and edits photos to demonstrate the Photos framework.</string>
 </dict>
 </plist>
