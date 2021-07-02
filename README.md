@@ -2,7 +2,7 @@
 
 ## A flutter plugin to pick an image from iOS camera roll or Android image gallery. Layout on flutter side, business logic on native side.
 
-![loka_linkedin_bg](https://user-images.githubusercontent.com/14978705/124147816-54a1cb00-da8f-11eb-9ff1-52669cd122ad.png)
+![v1](https://user-images.githubusercontent.com/14978705/124298979-30142480-db5d-11eb-8f57-127b4d47e230.png)
 
 Made with 💙 by **Loka Inc.** [https://loka.com](https://loka.com)
 
